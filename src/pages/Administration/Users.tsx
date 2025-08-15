@@ -74,7 +74,9 @@ const register = async (userData: CreateUserDto) => {
     throw error;
   }
 }
-const myModule = ModuleManager.getModuleByName("Gestión de Usuarios");
+// const myModule = ModuleManager.getModuleByName("Gestión de Usuarios");
+const myModule = ModuleManager.getModuleByName("Ventas");
+
 const checkPermission = async (permissionType: string) => {
   try {
     const userId = JSON.parse(localStorage.getItem('user') || '{}').id || 14
