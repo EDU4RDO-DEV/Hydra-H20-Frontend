@@ -56,7 +56,7 @@ import {
   SelectValue,
 } from "../../components/ui/select"
 import { Label } from "../../components/ui/label"
-import { toast } from "sonner"
+import { useToast } from "../../context/ToastContext"
 
 import { CreateUserDto, User, UserFormValues } from "../../types/user"
 import userService from "../../services/userService"
@@ -79,7 +79,7 @@ const myModule = ModuleManager.getModuleByName("Ventas");
 
 const checkPermission = async (permissionType: string) => {
   try {
-    const userId = JSON.parse(localStorage.getItem('user') || '{}').id 
+    const userId = JSON.parse(localStorage.getItem('user') || '{}').id
     const response = await permissionService.checkPermission(userId, myModule!.moduleName, myModule!.group, permissionType);
     return response;
   } catch (error) {
@@ -88,10 +88,10 @@ const checkPermission = async (permissionType: string) => {
   }
 }
 
-const roleOptions = ["Administrador", "Gerente de Ventas", "Vendedor", "Operador de Maquinaria", "Operador de Llenado", "Bodeguero", "Repartidor"]
 
 
 export default function UserManagement() {
+  const toast = useToast();
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -125,7 +125,8 @@ export default function UserManagement() {
   }, []);
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [globalFilter, setGlobalFilter] = useState("")
+  const [globalFilter, setGlobalFilter] = useState("");
+  // Eliminados filtros de rol y email
 
 
   const columns: ColumnDef<User>[] = [
@@ -199,6 +200,23 @@ export default function UserManagement() {
                   Anular
                 </DropdownMenuItem>
               )}
+              {/* Opción para reactivar */}
+              {user.canceled && (
+                <DropdownMenuItem
+                  onClick={async () => {
+                    try {
+                      await userService.reactivateUser(user.id, JSON.parse(localStorage.getItem('user') || '{}').id);
+                      toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario reactivado correctamente' });
+                      fetchUsers();
+                    } catch {
+                      toast.current?.show({ severity: 'error', summary: 'Error', detail: 'No se pudo reactivar el usuario' });
+                    }
+                  }}
+                >
+                  <span className="mr-2 pi pi-refresh" />
+                  Reactivar
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -206,13 +224,22 @@ export default function UserManagement() {
     },
   ]
 
-  // Filtrar usuarios según el estado del switch (mostrar solo activos o solo anulados)
-  // Uso de useMemo para evitar recálculos innecesarios que pueden causar bloqueos
+  // Filtro global único: busca en nombre, email y rol
   const filteredUsers = useMemo(() => {
-    return showCanceled
-      ? users.filter(user => user.canceled)
-      : users.filter(user => !user.canceled);
-  }, [users, showCanceled]);
+    let filtered = users;
+    if (globalFilter) {
+      const search = globalFilter.toLowerCase();
+      filtered = filtered.filter(user =>
+        user.name.toLowerCase().includes(search) ||
+        user.email.toLowerCase().includes(search) ||
+        user.role.toLowerCase().includes(search)
+      );
+    }
+    filtered = showCanceled
+      ? filtered.filter(user => user.canceled)
+      : filtered.filter(user => !user.canceled);
+    return filtered;
+  }, [users, showCanceled, globalFilter]);
 
   const table = useReactTable({
     data: filteredUsers,
@@ -235,7 +262,7 @@ export default function UserManagement() {
     },
     initialState: {
       pagination: {
-        pageSize: 100, // Mostrar más registros por página
+        pageSize: 10, // Mostrar 10 registros por página
       },
     },
   })
@@ -393,9 +420,7 @@ export default function UserManagement() {
       if (currentUser) {
         // Ya verificamos el permiso al cargar la página
         if (!permissions.edit) {
-          toast("Error", {
-            description: "No tienes permiso para editar usuarios",
-          });
+          toast.current?.show({ severity: 'error', summary: 'Error', detail: 'No tienes permiso para editar usuarios' });
           return;
         }
 
@@ -417,45 +442,35 @@ export default function UserManagement() {
           await userService.updatePassword(
             currentUser.id,
             formValues.Password,
-            JSON.parse(localStorage.getItem('user') || '{}').id 
+            JSON.parse(localStorage.getItem('user') || '{}').id
           );
 
-          toast("Éxito", {
-            description: "Usuario y contraseña actualizados correctamente",
-          });
+          toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario y contraseña actualizados correctamente' });
         } else {
-          toast("Éxito", {
-            description: "Usuario actualizado correctamente",
-          });
+          toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario actualizado correctamente' });
         }
       } else {
         // Ya verificamos el permiso al cargar la página
         if (!permissions.create) {
-          toast("Error", {
-            description: "No tienes permiso para crear usuarios",
-          });
+          toast.current?.show({ severity: 'error', summary: 'Error', detail: 'No tienes permiso para crear usuarios' });
           return;
         }
 
         // Lógica para crear
         const createData = {
-          username: formValues.Name || formValues.Email.split('@')[0],
+          username: formValues.Username || formValues.Name || formValues.Email.split('@')[0],
           password: formValues.Password || "",
           email: formValues.Email,
           rol: formValues.Role,
         };
 
         await register(createData); // Usamos la función register que ya tenías
-        toast("Éxito", {
-          description: "Usuario creado correctamente",
-        });
+  toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente' });
       }
       setIsDialogOpen(false);
       fetchUsers();
     } catch (error) {
-      toast("Error", {
-        description: "Ocurrió un error al guardar el usuario",
-      });
+  toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al guardar el usuario' });
       console.error("Error al guardar usuario:", error);
     }
   }, [currentUser, formValues, updatePassword, validateForm, fetchUsers, permissions]);
@@ -466,23 +481,17 @@ export default function UserManagement() {
     try {
       // Ya verificamos el permiso al cargar la página
       if (!permissions.delete) {
-        toast("Error", {
-          description: "No tienes permiso para anular usuarios",
-        });
+        toast.current?.show({ severity: 'error', summary: 'Error', detail: 'No tienes permiso para anular usuarios' });
         return;
       }
 
       await userService.cancelUser(currentUser.id, JSON.parse(localStorage.getItem('user') || '{}').id)
 
-      toast("Éxito", {
-        description: "Usuario anulado correctamente",
-      })
+  toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario anulado correctamente' });
       setIsDeleteDialogOpen(false)
       fetchUsers()
     } catch (error) {
-      toast("Error", {
-        description: "No se pudo anular el usuario",
-      })
+  toast.current?.show({ severity: 'error', summary: 'Error', detail: 'No se pudo anular el usuario' });
     }
   }, [currentUser, permissions.delete, fetchUsers])
 
@@ -491,12 +500,11 @@ export default function UserManagement() {
       <div className="flex items-center justify-between py-4">
         <div className="flex items-center space-x-4">
           <Input
-            placeholder="Buscar usuarios..."
+            placeholder="Buscar..."
             value={globalFilter ?? ""}
             disabled={!permissions.list}
             onChange={(event) => {
-              const value = event.target.value
-              table.setGlobalFilter(value)
+              setGlobalFilter(event.target.value);
             }}
             className="max-w-sm"
           />
@@ -527,12 +535,27 @@ export default function UserManagement() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+                      className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+                    >
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
+                        : (
+                          <span className="flex items-center">
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {header.column.getCanSort() && (
+                              <span className="ml-1">
+                                {header.column.getIsSorted() === 'asc' && '▲'}
+                                {header.column.getIsSorted() === 'desc' && '▼'}
+                                {header.column.getIsSorted() === false && <span className="opacity-30">↕</span>}
+                              </span>
+                            )}
+                          </span>
                         )}
                     </TableHead>
                   )
@@ -658,11 +681,13 @@ export default function UserManagement() {
                     <SelectValue placeholder="Seleccione un rol" />
                   </SelectTrigger>
                   <SelectContent>
-                    {roleOptions.map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {role}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="Administrador">Administrador</SelectItem>
+                    <SelectItem value="Gerente de Ventas">Gerente de Ventas</SelectItem>
+                    <SelectItem value="Vendedor">Vendedor</SelectItem>
+                    <SelectItem value="Operador de Maquinaria">Operador de Maquinaria</SelectItem>
+                    <SelectItem value="Operador de Llenado">Operador de Llenado</SelectItem>
+                    <SelectItem value="Bodeguero">Bodeguero</SelectItem>
+                    <SelectItem value="Repartidor">Repartidor</SelectItem>
                   </SelectContent>
                 </Select>
                 {formErrors.Role && (

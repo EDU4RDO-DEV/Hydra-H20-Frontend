@@ -88,7 +88,25 @@ class AuthService {
     }
   }
 
-  // ... otros métodos ...
+  async logout(): Promise<{ success: boolean; message: string }> {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        localStorage.clear();
+        return { success: true, message: 'Sesión cerrada localmente' };
+      }
+      await api.post('/Auth/logout', {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      localStorage.clear();
+      return { success: true, message: 'Sesión cerrada correctamente' };
+    } catch (error) {
+      localStorage.clear();
+      return { success: false, message: 'Error al cerrar sesión en el servidor, sesión cerrada localmente' };
+    }
+  }
 }
 
 export default new AuthService();

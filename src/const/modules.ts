@@ -22,7 +22,7 @@ const systemModules: Module[] = [
   { moduleName: "Facturación y Cobros", group: "Ventas" },
   { moduleName: "Reportes", group: "a" },
   { moduleName: "Reportes y Estadísticas", group: "a" },
-  { moduleName: "Reportes y Estadísticas", group: "Administraciónnnnnnnn" },
+  { moduleName: "Reportes y Estadísticas", group: "Administración" },
   { moduleName: "Mantenimiento de Maquinaria", group: "Técnico" },
   { moduleName: "Mantenimiento de Planta", group: "Técnico" },
   { moduleName: "Gestión de Usuarios", group: "Seguridad" }

@@ -17,6 +17,7 @@ export interface GroupedPermission {
 }
 
 export interface modulePermission {
+  id: number; 
   moduleId: number;
   moduleName: string;
   group: string;

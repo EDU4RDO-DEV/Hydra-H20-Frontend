@@ -17,14 +17,15 @@ export default function AuthLayout({
             {/* <!-- ===== Common Grid Shape Start ===== --> */}
             <GridShape />
             <div className="flex flex-col items-center max-w-xs">
-              <Link to="/" className="block mb-4">
+              <a href="/" className="block mb-4" aria-label="Inicio">
                 <img
-                  width={231}
-                  height={48}
-                  src="/images/logo/auth-logo.svg"
-                  alt="Logo"
+                  width={80}
+                  height={80}
+                  src="https://cdn-icons-png.flaticon.com/512/728/728093.png"
+                  alt="Logo gota de agua"
+                  style={{ display: 'block', margin: '0 auto' }}
                 />
-              </Link>
+              </a>
               <p className="text-center text-gray-400 dark:text-white/60">
                 Agua Viva
               </p>

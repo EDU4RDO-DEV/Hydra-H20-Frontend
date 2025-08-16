@@ -12,7 +12,7 @@ class UserService {
       console.log(response.data);
       return response.data;
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error al obtener los usuarios:', error);
       throw error;
     }
   }
@@ -23,7 +23,7 @@ class UserService {
       const response = await api.get(`/users/${id}`);
       return response.data;
     } catch (error) {
-      console.error(`Error fetching user with id ${id}:`, error);
+      console.error(`Error al obtener el usuario con id ${id}:`, error);
       throw error;
     }
   }
@@ -34,7 +34,7 @@ class UserService {
       const response = await api.post('/users', userData);
       return response.data;
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.error('Error al crear el usuario:', error);
       throw error;
     }
   }
@@ -47,12 +47,12 @@ class UserService {
       const response = await api.put('/User/edit', userData);
       return response.data;
     } catch (error) {
-      console.error(`Error updating user with id ${id}:`, error);
+      console.error(`Error al actualizar el usuario con id ${id}:`, error);
       throw error;
     }
   }
 
-  async updatePassword(id: number, newPassword: string, modifiedByUserId :number): Promise<void> {
+  async updatePassword(id: number, newPassword: string, modifiedByUserId: number): Promise<void> {
     try {
       await api.put(`/User/update-password`, {
         id,
@@ -60,11 +60,10 @@ class UserService {
         modifiedByUserId
       })
     } catch (error) {
-      console.error(`Error updating password user with id ${id}:`, error);
+      console.error(`Error al actualizar la contraseña del usuario con id ${id}:`, error);
       throw error;
     }
   }
-
 
   // Eliminar (cancelar) un usuario
   async deleteUser(id: number, cancelUserId: number): Promise<void> {
@@ -73,31 +72,31 @@ class UserService {
         data: { cancelUserId } // Envía el ID del usuario que realiza la cancelación
       });
     } catch (error) {
-      console.error(`Error deleting user with id ${id}:`, error);
+      console.error(`Error al eliminar el usuario con id ${id}:`, error);
       throw error;
     }
   }
 
   // Reactivar un usuario cancelado
-  async reactivateUser(id: number): Promise<User> {
+  async reactivateUser(userId: number, modifiedByUserId: number): Promise<User> {
     try {
-      const response = await api.patch(`/users/${id}/reactivate`);
+      const response = await api.put(`/User/enable?userId=${userId}&modifiedByUserId=${modifiedByUserId}`);
       return response.data;
     } catch (error) {
-      console.error(`Error reactivating user with id ${id}:`, error);
+      console.error(`Error al reactivar el usuario con id ${userId}:`, error);
       throw error;
     }
   }
 
   async cancelUser(id: number, cancelUserId: number): Promise<void> {
-  try {
-    const response = await api.post(`/User/${id}/cancel?cancelUserId=${cancelUserId}`);
-  } catch (error) {
-    console.error(`Error canceling user with id ${id} by user ${cancelUserId}:`, error);
+    try {
+      const response = await api.post(`/User/${id}/cancel?cancelUserId=${cancelUserId}`);
+    } catch (error) {
+      console.error(`Error al anular el usuario con id ${id} por el usuario ${cancelUserId}:`, error);
 
-    throw error;
+      throw error;
+    }
   }
-}
 
 }
 

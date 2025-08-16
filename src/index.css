@@ -1,3 +1,6 @@
+@import 'primereact/resources/themes/lara-light-blue/theme.css';
+@import 'primereact/resources/primereact.min.css';
+@import 'primeicons/primeicons.css';
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap")
 layer(base);
 
@@ -907,4 +910,9 @@ span.flatpickr-weekday,
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Asegura que el Toast de PrimeReact esté siempre por encima del header */
+.p-toast {
+  z-index: 100000 !important;
 }

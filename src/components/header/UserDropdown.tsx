@@ -1,9 +1,20 @@
 import { useState } from "react";
+import AuthService from "../../services/authService";
+import { useNavigate } from "react-router-dom";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link } from "react-router";
 
 export default function UserDropdown() {
+  const navigate = useNavigate();
+  // Obtener usuario autenticado desde localStorage
+  const user = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || "null");
+    } catch {
+      return null;
+    }
+  })();
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
@@ -13,17 +24,25 @@ export default function UserDropdown() {
   function closeDropdown() {
     setIsOpen(false);
   }
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await AuthService.logout();
+    navigate("/signin");
+  };
+
   return (
     <div className="relative">
       <button
         onClick={toggleDropdown}
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
-        <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
+        {/* <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
           <img src="/images/user/owner.jpg" alt="User" />
-        </span>
+        </span> */}
 
-        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+        <span className="block mr-1 font-medium text-theme-sm">
+          {user?.username || "Usuario"}
+        </span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -51,14 +70,17 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Musharof Chowdhury
+            {user?.username || "Usuario"}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+            {user?.email || "Sin correo"}
+          </span>
+          <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
+            {user?.role ? `Rol: ${user.role}` : "Sin rol"}
           </span>
         </div>
 
-        <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+        {/* <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
           <li>
             <DropdownItem
               onItemClick={closeDropdown}
@@ -81,7 +103,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Edit profile
+              Editar perfil
             </DropdownItem>
           </li>
           <li>
@@ -106,7 +128,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Account settings
+              Configuración de cuenta
             </DropdownItem>
           </li>
           <li>
@@ -131,12 +153,13 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Support
+              Soporte
             </DropdownItem>
           </li>
-        </ul>
-        <Link
-          to="/signin"
+        </ul> */}
+        <a
+          href="#"
+          onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
         >
           <svg
@@ -154,8 +177,8 @@ export default function UserDropdown() {
               fill=""
             />
           </svg>
-          Sign out
-        </Link>
+          Cerrar sesión
+        </a>
       </Dropdown>
     </div>
   );

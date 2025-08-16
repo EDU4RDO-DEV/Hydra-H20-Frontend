@@ -9,7 +9,7 @@ class PermissionService {
       const response = await api.post('/Permissions/create', permissionData);
       return response.data;
     } catch (error) {
-      console.error('Error creating permission:', error);
+      console.error('Error al crear el permiso:', error);
       throw error;
     }
   }
@@ -20,7 +20,7 @@ class PermissionService {
       const response = await api.post(`/Permissions/default/${userId}`);
       return response.data;
     } catch (error) {
-      console.error(`Error creating default permissions for user ${userId}:`, error);
+      console.error(`Error al crear permisos por defecto para el usuario ${userId}:`, error);
       throw error;
     }
   }
@@ -31,7 +31,7 @@ class PermissionService {
       const response = await api.post('/Permissions/copy', copyData);
       return response.data;
     } catch (error) {
-      console.error('Error copying permissions:', error);
+      console.error('Error al copiar los permisos:', error);
       throw error;
     }
   }
@@ -42,7 +42,7 @@ class PermissionService {
       const response = await api.post('/Permissions/assign-group', assignData);
       return response.data;
     } catch (error) {
-      console.error('Error assigning permissions to group:', error);
+      console.error('Error al asignar permisos al grupo:', error);
       throw error;
     }
   }
@@ -53,7 +53,7 @@ class PermissionService {
       const response = await api.put('/Permissions', updateData);
       return response.data;
     } catch (error) {
-      console.error('Error updating permissions:', error);
+      console.error('Error al actualizar los permisos:', error);
       throw error;
     }
   }
@@ -63,7 +63,7 @@ class PermissionService {
     try {
       await api.delete(`/Permissions/delete/${permissionId}`);
     } catch (error) {
-      console.error(`Error deleting permission with id ${permissionId}:`, error);
+      console.error(`Error al eliminar el permiso con id ${permissionId}:`, error);
       throw error;
     }
   }
@@ -73,7 +73,7 @@ class PermissionService {
     try {
       await api.delete(`/Permissions/delete-all/${userId}`);
     } catch (error) {
-      console.error(`Error deleting all permissions for user ${userId}:`, error);
+      console.error(`Error al eliminar todos los permisos del usuario ${userId}:`, error);
       throw error;
     }
   }
@@ -84,7 +84,7 @@ class PermissionService {
       const response = await api.get('/Permissions/user-module');
       return response.data;
     } catch (error) {
-      console.error('Error fetching user modules:', error);
+      console.error('Error al obtener los módulos del usuario:', error);
       throw error;
     }
   }
@@ -95,7 +95,7 @@ class PermissionService {
       const response = await api.get('/Permissions/module-users');
       return response.data;
     } catch (error) {
-      console.error('Error fetching module users:', error);
+      console.error('Error al obtener los usuarios del módulo:', error);
       throw error;
     }
   }
@@ -106,7 +106,7 @@ class PermissionService {
       const response = await api.get(`/Permissions/accessible-modules/${userId}`);
       return response.data;
     } catch (error) {
-      console.error(`Error fetching accessible modules for user ${userId}:`, error);
+      console.error(`Error al obtener los módulos accesibles para el usuario ${userId}:`, error);
       throw error;
     }
   }
@@ -117,13 +117,13 @@ class PermissionService {
       const response = await api.get('/Permissions/has-any-in-group', { params: groupData });
       return response.data;
     } catch (error) {
-      console.error('Error checking permissions in group:', error);
+      console.error('Error al verificar permisos en el grupo:', error);
       throw error;
     }
   }
 
   // Verificar un permiso específico
-  async checkPermission(userId :number, moduleName: string, moduleGroup : string, permissionType : string): Promise<boolean> {
+  async checkPermission(userId: number, moduleName: string, moduleGroup: string, permissionType: string): Promise<boolean> {
     try {
       const checkData = {
         userId,
@@ -135,7 +135,7 @@ class PermissionService {
       const response = await api.get('/Permissions/check', { params: checkData });
       return response.data.success;
     } catch (error) {
-      console.error('Error checking permission:', error);
+      console.error('Error al verificar el permiso:', error);
       throw error;
     }
   }
@@ -146,17 +146,18 @@ class PermissionService {
 
       return response.data;
     } catch (error) {
-      console.error(`Error fetching permissions for user ${userId}:`, error);
+      console.error(`Error al obtener los permisos del usuario ${userId}:`, error);
       throw error;
     }
   }
   async updateUserPermissions(permissions: any[]): Promise<void> {
     try {
+      console.log("los permisos a actualizar son: ", permissions);
       const response = await api.put(`/Permissions`, permissions);
       return response.data;
 
     } catch (error) {
-      console.error(`Error updating permissions:`, error);
+      console.error(`Error al actualizar los permisos:`, error);
       throw error;
     }
   }

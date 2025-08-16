@@ -20,6 +20,8 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import UserManagement from "./pages/Administration/Users";
 import PermissionsManagement from "./pages/Administration/Permissions";
+import Module from "./pages/Administration/Modules";
+import Employee from "./pages/Entity/Employee";
 
 export default function App() {
   return (
@@ -33,6 +35,8 @@ export default function App() {
 
             <Route path="/users" element={<UserManagement />} />
             <Route path="/permissions" element={<PermissionsManagement />} />
+            <Route path="/modules" element={<Module />} />
+            <Route path="/employee" element={<Employee />} />
 
           </Route>
 
