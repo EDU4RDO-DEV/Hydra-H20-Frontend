@@ -19,6 +19,7 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import UserManagement from "./pages/Administration/Users";
+import PermissionsManagement from "./pages/Administration/Permissions";
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
             <Route index path="/home" element={<Home />} />
 
             <Route path="/users" element={<UserManagement />} />
+            <Route path="/permissions" element={<PermissionsManagement />} />
 
           </Route>
 

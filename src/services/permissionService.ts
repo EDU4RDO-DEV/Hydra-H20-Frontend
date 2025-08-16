@@ -1,4 +1,5 @@
 // src/services/permissionService.ts
+import { GroupedPermission } from '../types/permission';
 import api from './axiosCliente';
 
 class PermissionService {
@@ -138,6 +139,29 @@ class PermissionService {
       throw error;
     }
   }
+  async getUserPermissions(userId: number): Promise<GroupedPermission[]> {
+    try {
+      const response = await api.get(`/Permissions/${userId}/all-permissions`);
+      console.log("los permisos response son: ", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching permissions for user ${userId}:`, error);
+      throw error;
+    }
+  }
+  async updateUserPermissions(permissions: any[]): Promise<void> {
+    try {
+      const response = await api.put(`/Permissions`, permissions);
+      return response.data;
+
+    } catch (error) {
+      console.error(`Error updating permissions:`, error);
+      throw error;
+    }
+  }
+
 }
+
 
 export default new PermissionService();

@@ -79,7 +79,7 @@ const myModule = ModuleManager.getModuleByName("Ventas");
 
 const checkPermission = async (permissionType: string) => {
   try {
-    const userId = JSON.parse(localStorage.getItem('user') || '{}').id || 14
+    const userId = JSON.parse(localStorage.getItem('user') || '{}').id 
     const response = await permissionService.checkPermission(userId, myModule!.moduleName, myModule!.group, permissionType);
     return response;
   } catch (error) {
@@ -406,7 +406,7 @@ export default function UserManagement() {
           role: formValues.Role,
           email: formValues.Email,
           canceled: currentUser.canceled,
-          modifiedByUserId: JSON.parse(localStorage.getItem('user') || '{}').id || 14
+          modifiedByUserId: JSON.parse(localStorage.getItem('user') || '{}').id
         };
 
         await userService.updateUser(currentUser.id, editData);
@@ -417,7 +417,7 @@ export default function UserManagement() {
           await userService.updatePassword(
             currentUser.id,
             formValues.Password,
-            JSON.parse(localStorage.getItem('user') || '{}').id || 14
+            JSON.parse(localStorage.getItem('user') || '{}').id 
           );
 
           toast("Éxito", {
@@ -472,7 +472,7 @@ export default function UserManagement() {
         return;
       }
 
-      await userService.cancelUser(currentUser.id, JSON.parse(localStorage.getItem('user') || '{}').id || 14)
+      await userService.cancelUser(currentUser.id, JSON.parse(localStorage.getItem('user') || '{}').id)
 
       toast("Éxito", {
         description: "Usuario anulado correctamente",
