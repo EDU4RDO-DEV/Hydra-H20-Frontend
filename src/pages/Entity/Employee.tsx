@@ -78,7 +78,7 @@ export default function EmployeeManagement() {
         fullName: "",
         gender: "",
         birthDate: "",
-        entryDate: "", // <-- Agrega esta línea
+        entryDate: "",
         phone1: "",
         email: "",
         nit: "",
